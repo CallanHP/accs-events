@@ -1,0 +1,27 @@
+var MulticastEvents = require('../util/multicast_event_emitter.js');
+
+var eventHandler = new MulticastEvents();
+
+var mockEventTypes = new Array("eventOne", "eventTwo", "alarmOne", "alerting");
+var mockEventArguments = new Array(6, "string", {name:"JsonArgument", paramters:true});
+var iter = 0;
+
+setInterval(function(){
+	console.log("Broadcasting - " +mockEventTypes[iter%4]);
+	switch(iter%4){
+		case 0:
+			eventHandler._broadcastEvent(mockEventTypes[iter%4]);
+			break;
+		case 1:
+			eventHandler._broadcastEvent(mockEventTypes[iter%4], mockEventArguments[0]);
+			break;
+		case 2:
+			eventHandler._broadcastEvent(mockEventTypes[iter%4], mockEventArguments[0], mockEventArguments[1]);
+			break;
+		default:
+			eventHandler._broadcastEvent(mockEventTypes[iter%4], mockEventArguments[0], mockEventArguments[1], mockEventArguments[2]);
+			break;
+	}
+	
+	iter++;
+}, 1000)

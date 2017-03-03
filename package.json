@@ -2,9 +2,9 @@
   "name": "accs-events",
   "version": "1.0.0",
   "description": "Module providing a multi-cast based event network for Oracle's Application Container Cloud Service",
-  "main": "index.js",
+  "main": "event_network.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --reporter spec"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
   "homepage": "https://github.com/CallanHP/accs-events#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^3.2.0"
+    "mocha": "^3.2.0",
+    "test-console": "^1.0.0"
   }
 }

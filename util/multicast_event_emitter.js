@@ -43,35 +43,35 @@ const ACCS_INTERNAL_INTERFACE_NAME = "eth0";
 
 //Set up broadcast server
 var _eventServer = dgram.createSocket("udp4");
-_eventServer.bind(_multicastPort, function(err){
+_eventServer.bind(_multicastPort, _getHostIP(), function(err){
   if(err){
     console.error(err);
   }else{
     _eventServer.setBroadcast(true);
     _eventServer.setMulticastTTL(128);
-    _eventServer.addMembership(_multicastAddress); 
+    _eventServer.addMembership(_multicastAddress, _getHostIP());
   }
 });
 
 function _MulticastEventHandler(parent){
   this._parent = parent;
   //Set up client receiver
-  this._eventClient = dgram.createSocket('udp4');
+  //this._eventClient = dgram.createSocket('udp4');
   var self = this;
-  this._eventClient.on('message', function (message, remote) {   
+  _eventServer.on('message', function (message, remote) {   
     self._handleMessage(message);
   });
-  this._eventClient.bind(_multicastPort, _getHostIP(), function(err){
-    if(err){
-      console.error(err);
-    }else{
-      var address = self._eventClient.address();
-      //console.log('UDP Client listening on ' + address.address + ":" + address.port);
-      self._eventClient.setBroadcast(true);
-      self._eventClient.setMulticastTTL(128); 
-      self._eventClient.addMembership(_multicastAddress, _getHostIP());
-    }
-  })
+  // this._eventClient.bind(_multicastPort, _getHostIP(), function(err){
+  //   if(err){
+  //     console.error(err);
+  //   }else{
+  //     var address = self._eventClient.address();
+  //     //console.log('UDP Client listening on ' + address.address + ":" + address.port);
+  //     self._eventClient.setBroadcast(true);
+  //     self._eventClient.setMulticastTTL(128); 
+  //     self._eventClient.addMembership(_multicastAddress, _getHostIP());
+  //   }
+  // });
 }
 
 _MulticastEventHandler.prototype._broadcastEvent = function(eventName, ...args){

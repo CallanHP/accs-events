@@ -6,7 +6,7 @@ var Network = require('../event_network.js');
 var nw = new Network();
 
 
-/* Console testing pattern!
+/* Console testing pattern
 var inspect = stdout.inspect();
 //Do stuff that logs to console
 inspect.restore();
@@ -18,6 +18,7 @@ describe("Multicast Event Network", function(){
     nw.on('testEventNoParams', function(){console.log("testEventNoParams was invoked!");});
     nw.on('testEvent', function(message){console.log(message);});
     nw.on('testEventTwoParts', function(messageOne, messageTwo){console.log(messageOne+messageTwo);});
+    nw.on('testEventComplexObject', function(obj){console.log(obj.deepParam + obj.arrayParam[0]);});
   });
 
   it("Displays singleton Behaviour", function(){
@@ -44,7 +45,6 @@ describe("Multicast Event Network", function(){
   it("Invokes an event, passing one simple parameter", function(done){
     var inspect = stdout.inspect();
     nw.fire('testEvent', "Passed a message!");
-    //Using timeouts, because there is no other way to handle expected async
     setTimeout(function(){
       inspect.restore();
       expect(inspect.output).to.have.members(["Passed a message!\n"]);
@@ -55,10 +55,23 @@ describe("Multicast Event Network", function(){
   it("Invokes an event, passing multiple simple parameters", function(done){
     var inspect = stdout.inspect();
     nw.fire('testEventTwoParts', "Hello ", "World");
-    //Using timeouts, because there is no other way to handle expected async
     setTimeout(function(){
       inspect.restore();
       expect(inspect.output).to.have.members(["Hello World\n"]);
+      done();
+    }, 100);
+  });
+
+  it("Invokes an event, with a complex paremeter", function(done){
+    var eventObject = {
+                        deepParam : "Next is array entry:",
+                        arrayParam : ["This is the array entry", "Other entry"]
+                      };
+    var inspect = stdout.inspect();
+    nw.fire('testEventComplexObject', eventObject);
+    setTimeout(function(){
+      inspect.restore();
+      expect(inspect.output).to.have.members(["Next is array entry:This is the array entry\n"]);
       done();
     }, 100);
   });
@@ -68,7 +81,6 @@ describe("Multicast Event Network", function(){
     nw.unsubscribe(eventId);
     var inspect = stdout.inspect();
     nw.fire('testEventToClear');
-    //Using timeouts, because there is no other way to handle expected async
     setTimeout(function(){
       inspect.restore();
       expect(inspect.output).to.not.have.members(["This event should have been cleared!\n"]);
@@ -83,5 +95,11 @@ describe("Multicast Event Network", function(){
       expect(nw.unsubscribe(eventId)).to.throw(Error);
     }catch(err){}
   });  
-
 });
+
+describe("Because of network binding behaviour, hard to test multiple instance behaviour." 
+  +" A sample express file is included in the test folder for multi-instance testing.", function(){
+    it("Returns true", function(){
+      expect(true).to.equal(true);
+    });
+  });

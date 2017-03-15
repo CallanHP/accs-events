@@ -42,6 +42,24 @@ describe("Multicast Event Network", function(){
     }, 100);
   });
 
+  it("Creates an event to be called once", function(done){
+    nw.once('testEventShouldBeCalledOnce', function(){console.log("testEventShouldBeCalledOnce called.");});
+    var inspect = stdout.inspect();
+    nw.fire('testEventShouldBeCalledOnce');
+    //Using timeouts, because there is no other way to handle expected async
+    setTimeout(function(){
+      inspect.restore();
+      expect(inspect.output).to.have.members(["testEventShouldBeCalledOnce called.\n"]);
+      inspect = stdout.inspect();
+      nw.fire('testEventShouldBeCalledOnce');
+      setTimeout(function(){
+        inspect.restore();
+        expect(inspect.output).to.have.length(0);
+        done();
+      },100);
+    }, 100);
+  });
+
   it("Invokes an event, passing one simple parameter", function(done){
     var inspect = stdout.inspect();
     nw.fire('testEvent', "Passed a message!");

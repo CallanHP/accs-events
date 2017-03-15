@@ -14,7 +14,7 @@ const INTMAX = 2147483647;
 //Determine offsets for the multi-cast group from the app name
 //Hashing is pretty fast, but still don't do it if we don't have to...
 if(!process.env.MULTICAST_ADDRESS || !process.env.MULTICAST_PORT || Number(process.env.MULTICAST_PORT) == NaN){
-  var hostHash = _hashAppName((process.env.HOSTNAME || "localTesting.local"));  
+  var hostHash = _hashAppName((process.env.HOSTNAME || "localTesting.local"));
 }
 
 //Can use pretty much any address in the 224.0.0.255 - 231.255.255.255 range
@@ -38,8 +38,8 @@ if(process.env.MULTICAST_PORT && Number(process.env.MULTICAST_PORT) != NaN){
 
 //ACCS has a couple of network interfaces, eth0 (which is in the 172.x range) and ethwe (which is in the 10.32.x range)
 //The 172.x network is the docker default bridge network.
-//The 10.32.x network is a Docker Swarm overlay network???
-const ACCS_INTERNAL_INTERFACE_NAME = "eth0";
+//The 10.x network is a Docker Swarm overlay network???
+const ACCS_INTERNAL_INTERFACE_NAME = "ethwe";
 
 //Set up broadcast server
 var _eventServer = dgram.createSocket("udp4");
@@ -94,7 +94,7 @@ _MulticastEventHandler.prototype._handleMessage = function(message){
 //Get the host IP address based upon the network interfaces
 function _getHostIP(){
   var interfaces = os.networkInterfaces();
-  var interfaceName = (process.env.MULTICAST_BIND_INTERFACE || ACCS_INTERNAL_INTERFACE_NAME)
+  var interfaceName = (process.env.MULTICAST_BIND_INTERFACE || ACCS_INTERNAL_INTERFACE_NAME);
   var accsInterface = interfaces[interfaceName];
   if(!accsInterface){
     console.warn("The ACCS network interface doesn't appear to be present, will select a different available interface for binding.");

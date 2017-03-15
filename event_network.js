@@ -24,7 +24,22 @@ Network.prototype.on = function(eventName, eventFunction){
 	if(!this._events[eventName]){
 		this._events[eventName] = {};
 	}
-	this._events[eventName][id] = eventFunction;
+	this._events[eventName][id] = {}
+	this._events[eventName][id].method = eventFunction;
+	this._events[eventName][id].persistent = true;
+	this._eventIds[id] = eventName;
+	return id;	
+}
+
+//Called once, then self-deleting.
+Network.prototype.once = function(eventName, eventFunction){
+	var id = uuid.generateUUID();
+	if(!this._events[eventName]){
+		this._events[eventName] = {};
+	}
+	this._events[eventName][id] = {}
+	this._events[eventName][id].method = eventFunction;
+	this._events[eventName][id].persistent = false;
 	this._eventIds[id] = eventName;
 	return id;	
 }
@@ -49,7 +64,11 @@ Network.prototype._callEvent = function(eventName, eventArgsArray){
 		for(var eventFunction in this._events[eventName]){
 			//This is done to handle fire and forget
 			setTimeout(function(){
-		    	self._events[eventName][eventFunction](...eventArgsArray);
+				var method = self._events[eventName][eventFunction].method;
+				if(!self._events[eventName][eventFunction].persistent){
+		    		self.unsubscribe(eventFunction);
+		    	}
+		    	method(...eventArgsArray);
 			},0);
 		}
 	}

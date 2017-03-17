@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var stdout = require("test-console").stdout;
+var stdout = require('test-console').stdout;
 
 var Network = require('../event_network.js');
 
@@ -115,7 +115,7 @@ describe("Multicast Event Network", function(){
   });  
 });
 
-describe("Because of network binding behaviour, hard to test multiple instance behaviour." 
+describe("Because of dependancy on network binding behaviour, it is hard to test multiple instance behaviour." 
   +" A sample express file is included in the test folder for multi-instance testing.", function(){
     it("Returns true", function(){
       expect(true).to.equal(true);

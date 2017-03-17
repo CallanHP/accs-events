@@ -1,5 +1,5 @@
 'use strict';
-var MulticastNetwork = require('./util/multicast_event_emitter');
+var EventDistributionNetwork = require('./util/network_event_emitter');
 var uuid = require('./util/uuid');
 
 //Singleton Network pattern is acheived by Node Module caching.
@@ -12,7 +12,7 @@ function Network(){
 	if(_globalInstance){
 		return _globalInstance;
 	}
-	this._MulticastEvents = new MulticastNetwork(this);
+	this._eventDistributor = new EventDistributionNetwork(this);
 	//Object for holding events for this application instance
 	this._events = {};
 	//Object for holding event ids, to describe how to clear event listeners.
@@ -46,7 +46,7 @@ Network.prototype.once = function(eventName, eventFunction){
 
 Network.prototype.fire = function(eventName, ...args){
 	//Pass it down to the EDN
-	this._MulticastEvents._broadcastEvent(eventName, ...args);
+	this._eventDistributor._broadcastEvent(eventName, ...args);
 }
 
 Network.prototype.unsubscribe = function(eventId){

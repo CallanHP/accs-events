@@ -1,10 +1,10 @@
 {
   "name": "accs-events",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Module providing a application cluster-wide event network for Oracle's Application Container Cloud Service",
   "main": "event_network.js",
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "mocha --reporter spec ./test/test_event_network"
   },
   "repository": {
     "type": "git",

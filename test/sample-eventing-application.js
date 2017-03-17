@@ -1,23 +1,25 @@
 var express = require('express');
-//os is used to access the networking interfaces, to allow us to demonstrate the networking behaviour
-var os = require('os');
+
 var EventNetwork = require('accs-events');
+
+var eventNetwork = new EventNetwork();
 
 var app = express();
 app.set('port', (process.env.PORT || 3001));
 
+
+//These are just for demo-ing, to show network behaviour, and are not essential to the
+//operation of the network.
+var os = require('os');
 const ACCS_INTERNAL_INTERFACE_NAME = "ethwe";
 var thisHost = _getHostIP();
 
-var waiting = {};
-
-var eventNetwork = new EventNetwork();
 
 /*
  * This functions as a long-polling endpoint, creating an event which can be resolved
  * from the /resolve endpoint, which triggers returning to the client.
  *
- * Requires an invocation with an 'id' query parameter, which is used as the event name.
+ * Requires invocation with an 'id' query parameter, which is used as the event name.
  */
 app.get('/poll', function(req, res) {
   var identifier = req.query.id;
@@ -34,6 +36,8 @@ app.get('/poll', function(req, res) {
 /*
  * This endpoint just fires an event to resolve any clients polling on a given identifier
  * with an optional message to demonstrate how data can be passed between instances.
+ *
+ * Requires invocation with an 'id' query parameter, which is used to fire the event.
  */
 app.get('/resolve', function(req, res) {
   var identifier = req.query.id;
@@ -45,6 +49,7 @@ app.get('/resolve', function(req, res) {
   if(!msg){
     msg = "Resolved with no message.";
   }
+  //Fire the event which the poll endpoints are listening on.
   eventNetwork.fire(identifier, thisHost, msg);
   res.status(200).send(thisHost +" resolved " +identifier +"!");
 });

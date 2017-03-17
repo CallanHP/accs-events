@@ -22,7 +22,7 @@ $ npm install accs-events
 ```
 
 ## Simple Usage
-This module is designed to abstract away the networking complexity of distributing events across each of the instances of an application, allowing code to add listeners for events in one instance, and have them resolved by an occurance in another instance.
+This module is designed to abstract away the networking complexity of distributing events across each of the instances of an application, allowing code to add listeners for events in one instance, and have them resolved by an occurance in the same or another instance.
 Sample usage is as follows (showing express-style syntax for a simple web endpoint):
 
 ```js
@@ -49,7 +49,7 @@ app.get('/fireEvent', function(request, response){
 
 In this example, it doesn't matter which instance of the application happens to accessed when a user accesses the /fireEvent endpoint, the 'testLogging' event is fired in every application instance, writing to each of the logs.
 
-A simple express application to demonstrate event behaviour is available in the test folder of the module ([here]() on github).
+A simple express application to demonstrate event behaviour is available in the test folder of the module (or [here](https://github.com/CallanHP/accs-events/blob/master/test/sample-eventing-application.js) on github).
 
 ## Offline Testing
 

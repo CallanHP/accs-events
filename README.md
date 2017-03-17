@@ -22,7 +22,7 @@ $ npm install accs-events
 ```
 
 ## Simple Usage
-This module is designed to abstract away the networking complexity of distributing events across each of the instances of an application, allowing code to add listeners for events in one instance, and have them resolved by an occurance in the same or another instance.
+This module is designed to abstract away the networking complexity of distributing events across each of the instances of an application, allowing code to add listeners for events in one instance, and have them resolved by an occurence in the same or another instance.
 Sample usage is as follows (showing express-style syntax for a simple web endpoint):
 
 ```js

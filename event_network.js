@@ -20,6 +20,12 @@ function Network(){
 }
 
 Network.prototype.on = function(eventName, eventFunction){
+	if(!eventName || typeof eventName != 'string'){
+		throw new SyntaxError("eventName must be a string!");
+	}
+	if(!eventFunction || typeof eventFunction != 'function'){
+		throw new SyntaxError("Events must be created with a function!");
+	}
 	var id = uuid.generateUUID();
 	if(!this._events[eventName]){
 		this._events[eventName] = {};
@@ -33,6 +39,12 @@ Network.prototype.on = function(eventName, eventFunction){
 
 //Called once, then self-deleting.
 Network.prototype.once = function(eventName, eventFunction){
+	if(!eventName || typeof eventName != 'string'){
+		throw new SyntaxError("eventName must be a string!");
+	}
+	if(!eventFunction || typeof eventFunction != 'function'){
+		throw new SyntaxError("Events must be created with a function!");
+	}
 	var id = uuid.generateUUID();
 	if(!this._events[eventName]){
 		this._events[eventName] = {};
@@ -45,11 +57,17 @@ Network.prototype.once = function(eventName, eventFunction){
 }
 
 Network.prototype.fire = function(eventName, ...args){
+	if(!eventName || typeof eventName != 'string'){
+		throw new SyntaxError("eventName must be a string!");
+	}
 	//Pass it down to the EDN
 	this._eventDistributor._broadcastEvent(eventName, ...args);
 }
 
 Network.prototype.unsubscribe = function(eventId){
+	if(!eventId || typeof eventId != 'string'){
+		throw new SyntaxError("eventId must be a string!");
+	}
 	if(!this._eventIds[eventId]){
 		throw new Error(NO_SUCH_EVENT);
 	}

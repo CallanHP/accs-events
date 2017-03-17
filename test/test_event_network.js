@@ -112,7 +112,52 @@ describe("Multicast Event Network", function(){
     try{
       expect(nw.unsubscribe(eventId)).to.throw(Error);
     }catch(err){}
-  });  
+  });
+
+  it("Create a .on() listener with missing/invalid arguments throws syntax errors", function(){
+    try{
+      expect(nw.on()).to.throw(SyntaxError);
+    }catch(err){}
+    try{
+      expect(nw.on("event")).to.throw(SyntaxError);
+    }catch(err){}
+    try{
+      expect(nw.on(true,function(){})).to.throw(SyntaxError);
+    }catch(err){}
+    try{
+      expect(nw.on("event","string")).to.throw(SyntaxError);
+    }catch(err){}      
+  });
+  it("Create a .once() listener with missing/invalid arguments throws syntax errors", function(){
+    try{
+      expect(nw.once()).to.throw(SyntaxError);
+    }catch(err){}
+    try{
+      expect(nw.once("event")).to.throw(SyntaxError);
+    }catch(err){}
+    try{
+      expect(nw.once(true,function(){})).to.throw(SyntaxError);
+    }catch(err){}
+    try{
+      expect(nw.once("event","string")).to.throw(SyntaxError);
+    }catch(err){}      
+  });
+  it("Invoking .fire() with missing/invalid arguments throws syntax errors", function(){
+    try{
+      expect(nw.fire()).to.throw(SyntaxError);
+    }catch(err){}
+    try{
+      expect(nw.fire(true)).to.throw(SyntaxError);
+    }catch(err){} 
+  });
+  it("Invoking .unsubscribe() with missing/invalid arguments throws syntax errors", function(){
+    try{
+      expect(nw.unsubscribe()).to.throw(SyntaxError);
+    }catch(err){}
+    try{
+      expect(nw.unsubscribe(true)).to.throw(SyntaxError);
+    }catch(err){} 
+  });
 });
 
 describe("Because of dependancy on network binding behaviour, it is hard to test multiple instance behaviour." 

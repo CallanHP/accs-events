@@ -9,7 +9,6 @@
  * us to get a view of the rest of the instances at the time of application start.
  * Heartbeats are then used in order to maintain a view of the active instances.
  */
-
 var dgram = require('dgram');
 var os = require('os');
 var dns = require('dns');
@@ -50,16 +49,16 @@ _eventServer.bind(_networkPort, _thisIP, function(err){
   if(err){
     console.error(err);
   }
-  if(process.env.HOSTNAME){
+  if(process.env.HOSTNAME && process.env.APP_HOME){
     dns.resolve4(process.env.HOSTNAME, function(err, addresses){
       if(err){
         console.error(err);
         return;
       }
       clusterInstances = addresses;
-    });
-    //Send registration messages to establish the interfaces
-    _broadcastRegistration();
+      //Send registration messages to establish the interfaces
+      _broadcastRegistration();
+    });    
   }else{
     //Handle local testing
     clusterInstances = new Array(_thisIP);
@@ -67,17 +66,13 @@ _eventServer.bind(_networkPort, _thisIP, function(err){
   
 });
 
-if(process.env.HOSTNAME){
+if(process.env.HOSTNAME && process.env.APP_HOME){
   //Periodically check our cluster (we are handling registration events, but not deregistration, so this will likely only remove entries)
   setInterval(function(){
     dns.resolve4(process.env.HOSTNAME, function(err, addresses){
       if(err){
         console.error(err);
         return;
-      }
-      //Handle local testing
-      if(addresses.length == 0){
-        addresses = new Array(_thisIP);
       }
       clusterInstances = addresses;
     });
@@ -115,11 +110,11 @@ _EventDistributionNetwork.prototype._handleMessage = function(message, remote){
   var msgType = message.readUInt8(0);
   switch(msgType){
     case REGISTER_BYTE:
-      console.log(remote.address +" came online, added to cluster.");
+      console.log("Event Network: " +remote.address +" came online. Adding to cluster.");
       clusterInstances.push(remote.address);
       break;
     case DEREGISTER_BYTE:
-      console.log(remote.address +" went offline. Removing from cluster.");
+      console.log("Event Network: " +remote.address +" went offline. Removing from cluster.");
       for(var i = 0; i<clusterInstances.length; i++){
         if(clusterInstances[i] == remote.address){
           clusterInstances.splice(i, 1);
@@ -138,7 +133,7 @@ _EventDistributionNetwork.prototype._handleMessage = function(message, remote){
       break
     default:
       //Unknown message?!
-      console.log("Message with unknown type received. Type byte: 0x" +msgType.toString(16));
+      console.log("Event Network: Message with unknown type received. Type byte: 0x" +msgType.toString(16));
   }  
 }
 
@@ -152,7 +147,6 @@ function _getHostIP(){
     console.warn("This may cause issues with event distribution.");
     return null;
   }
-  //Might have to handle aliases???
   for(var address in accsInterface){
     if(accsInterface[address].family == "IPv4" && !accsInterface[address].internal){
       return accsInterface[address].address;
@@ -168,7 +162,6 @@ function _broadcastRegistration(){
   for(var instance in clusterInstances){
     if(clusterInstances[instance] != _thisIP){
       _eventServer.send(message, 0, message.length, _networkPort, clusterInstances[instance], function(err){
-        //Handle the error if we get an error NOENT? Do they appear on UDP, given it is unreliable anyway?
         if(err){
           console.error(err);
         }
@@ -182,7 +175,6 @@ function _broadcastDeregistration(){
   for(var instance in clusterInstances){
     if(clusterInstances[instance] != _thisIP){
       _eventServer.send(message, 0, message.length, _networkPort, clusterInstances[instance], function(err){
-        //Handle the error if we get an error NOENT? Do they appear on UDP, given it is unreliable anyway?
         if(err){
           console.error(err);
         }

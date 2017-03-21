@@ -72,11 +72,13 @@ The event network is a singleton, so the constructor simply returns a handler on
 
 ### Network.on
 ```
-on(eventName, eventFunction)
+on(eventName, [ttl], eventFunction)
 ```
 on adds a new behaviour to be taken when the specified event is fired. Multiple listeners can be listening for the same event, and all will be called with the supplied arguments. Listeners are local to the application instance, though can be invoked from any instance, local or remote.
 
 **eventName:** a string specifying the event identifier.
+
+**ttl:** (optional) the time-to-live (in ms) for an event, after which it is automatically unsubscribed.
 
 **eventFunction:** function that is to be invoked when the event occurs. The function can have accept number of arguments, though as these arguments are serialised and transmitted over the network, avoid passing around functions, unless you serialise them appropriately.
 
@@ -84,7 +86,7 @@ on adds a new behaviour to be taken when the specified event is fired. Multiple 
 
 ### Network.once
 ```
-once(eventName, eventFunction)
+once(eventName, [ttl], eventFunction)
 ```
 once adds a new behaviour to be taken when the specified event is fired, like on() does. The difference between the two is that an event added with once is removed after being invoked a single time, while an event added with on persists. The parameters are return value are the same as .on()
 
@@ -111,3 +113,5 @@ unsubscribe removes a specific event listener.
 Patch versions are used for bug and documentation-fixes.
 
 **1.0.x:** Initial release. 
+
+**1.1.x:** Added support for event time-to-live

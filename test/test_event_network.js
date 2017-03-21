@@ -39,7 +39,7 @@ describe("Multicast Event Network", function(){
       inspect.restore();
       expect(inspect.output).to.have.members(["testEventNoParams was invoked!\n"]);
       done();
-    }, 100);
+    }, 50);
   });
 
   it("Creates an event to be called once", function(done){
@@ -56,8 +56,8 @@ describe("Multicast Event Network", function(){
         inspect.restore();
         expect(inspect.output).to.have.length(0);
         done();
-      },100);
-    }, 100);
+      },50);
+    }, 50);
   });
 
   it("Invokes an event, passing one simple parameter", function(done){
@@ -67,7 +67,7 @@ describe("Multicast Event Network", function(){
       inspect.restore();
       expect(inspect.output).to.have.members(["Passed a message!\n"]);
       done();
-    }, 100);
+    }, 50);
   });
 
   it("Invokes an event, passing multiple simple parameters", function(done){
@@ -77,7 +77,7 @@ describe("Multicast Event Network", function(){
       inspect.restore();
       expect(inspect.output).to.have.members(["Hello World\n"]);
       done();
-    }, 100);
+    }, 50);
   });
 
   it("Invokes an event, with a complex paremeter", function(done){
@@ -91,7 +91,49 @@ describe("Multicast Event Network", function(){
       inspect.restore();
       expect(inspect.output).to.have.members(["Next is array entry:This is the array entry\n"]);
       done();
-    }, 100);
+    }, 50);
+  });
+
+  it("Create an event with TTL", function(done){
+    var eventId = nw.on('testEventWithTTL', 100, function(){console.log("This event should fire the first time.");});
+    var inspect = stdout.inspect();
+    nw.fire('testEventWithTTL');
+    setTimeout(function(){
+      inspect.restore();
+      expect(inspect.output).to.have.members(["This event should fire the first time.\n"]);
+      inspect = stdout.inspect();
+      nw.fire('testEventWithTTL');
+      setTimeout(function(){
+        inspect.restore();
+        expect(inspect.output).to.not.have.members(["This event should have been cleared!\n"]);
+        done();
+      }, 50);
+    }, 200);
+  });
+
+  it("Create a fire once event with TTL", function(done){
+    var eventId = nw.once('testOnceEventWithTTL', 100, function(){console.log("This event should expire.");});
+    setTimeout(function(){
+      var inspect = stdout.inspect();
+      nw.fire('testOnceEventWithTTL');
+      setTimeout(function(){
+        inspect.restore();
+        expect(inspect.output).to.not.have.members(["This event should expire.\n"]);
+        done();
+      }, 50);
+    }, 200);
+  });
+
+  //This is an odd test case, which covers catching the error thrown from the TTL-triggered unsubscribe.
+  it("Create a fire once event with TTL, firing before expiry", function(done){
+    var eventId = nw.once('testFiredOnceEventWithTTL', 100, function(){console.log("This event should fire then unsubscribe.");});
+    var inspect = stdout.inspect();
+    nw.fire('testFiredOnceEventWithTTL');
+    setTimeout(function(){
+      inspect.restore();
+      expect(inspect.output).to.have.members(["This event should fire then unsubscribe.\n"]);
+      done();
+    }, 50);
   });
 
   it("Clear an event", function(done){
@@ -103,7 +145,7 @@ describe("Multicast Event Network", function(){
       inspect.restore();
       expect(inspect.output).to.not.have.members(["This event should have been cleared!\n"]);
       done();
-    }, 100);
+    }, 50);
   });
 
   it("Clear a non-existant event", function(){
@@ -112,6 +154,18 @@ describe("Multicast Event Network", function(){
     try{
       expect(nw.unsubscribe(eventId)).to.throw(Error);
     }catch(err){}
+  });
+
+  it("Create a fire once event and clear it before firing", function(done){
+    var eventId = nw.once('testOnceEventToClear', function(){console.log("This event should be cleared.");});
+    nw.unsubscribe(eventId);
+    var inspect = stdout.inspect()
+    nw.fire('testOnceEventToClear');
+    setTimeout(function(){
+      inspect.restore();
+      expect(inspect.output).to.not.have.members(["This event should be cleared.\n"]);
+      done();
+    }, 50);
   });
 
   it("Create a .on() listener with missing/invalid arguments throws syntax errors", function(){
@@ -128,6 +182,7 @@ describe("Multicast Event Network", function(){
       expect(nw.on("event","string")).to.throw(SyntaxError);
     }catch(err){}      
   });
+
   it("Create a .once() listener with missing/invalid arguments throws syntax errors", function(){
     try{
       expect(nw.once()).to.throw(SyntaxError);
@@ -142,6 +197,7 @@ describe("Multicast Event Network", function(){
       expect(nw.once("event","string")).to.throw(SyntaxError);
     }catch(err){}      
   });
+
   it("Invoking .fire() with missing/invalid arguments throws syntax errors", function(){
     try{
       expect(nw.fire()).to.throw(SyntaxError);
@@ -150,6 +206,7 @@ describe("Multicast Event Network", function(){
       expect(nw.fire(true)).to.throw(SyntaxError);
     }catch(err){} 
   });
+
   it("Invoking .unsubscribe() with missing/invalid arguments throws syntax errors", function(){
     try{
       expect(nw.unsubscribe()).to.throw(SyntaxError);

@@ -1,6 +1,6 @@
 {
   "name": "accs-events",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Module providing a application cluster-wide event network for Oracle's Application Container Cloud Service",
   "main": "event_network.js",
   "scripts": {

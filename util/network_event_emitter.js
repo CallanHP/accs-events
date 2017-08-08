@@ -19,11 +19,13 @@ const EVENT_BYTE = 0xD1;
 const REGISTER_BYTE = 0xD2;
 const DEREGISTER_BYTE = 0xD4;
 
+
+var hostHash;
 //Determine port number from the app name, in order to mensure we are not joining event
 //networks for other applications, if they start up on an IP address we have in the list.
 //Hashing is pretty fast, but still don't do it if we don't have to...
 if(!process.env.EVENT_NETWORK_PORT || Number(process.env.EVENT_NETWORK_PORT) == NaN){
-  var hostHash = _hashAppName((process.env.HOSTNAME || "localTesting.local"));
+  hostHash = _hashAppName((process.env.HOSTNAME || "localTesting.local"));
 }
 
 var _networkPort;

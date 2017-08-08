@@ -55,7 +55,7 @@ app.get('/resolve', function(req, res) {
 });
 
 app.listen(app.get('port'), function() {
-  console.log('Caching test App listening on ' + app.get('port'));
+  console.log('Eventing test App listening on ' + app.get('port'));
 });
 
 
